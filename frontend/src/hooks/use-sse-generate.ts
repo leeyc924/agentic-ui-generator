@@ -3,6 +3,11 @@ import { useChatStore } from "../stores/chat-store";
 import { useEditorStore } from "../stores/editor-store";
 import { api } from "../lib/api";
 
+function extractJson(text: string): string {
+  const fenceMatch = text.match(/```(?:json)?\s*\n?([\s\S]*?)```/);
+  return fenceMatch ? fenceMatch[1].trim() : text;
+}
+
 export function useSSEGenerate() {
   const addUserMessage = useChatStore((s) => s.addUserMessage);
   const addAssistantMessage = useChatStore((s) => s.addAssistantMessage);
@@ -57,7 +62,8 @@ export function useSSEGenerate() {
                   durationMs: Date.now() - startTime,
                 });
                 try {
-                  const parsed = JSON.parse(data.full_text);
+                  const jsonStr = extractJson(data.full_text);
+                  const parsed = JSON.parse(jsonStr);
                   applyLLMDocument(parsed);
                 } catch {
                   // full_text might not be valid JSON

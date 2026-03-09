@@ -1,4 +1,4 @@
-# AGUI - Agent-Generated UI
+# A2UI - Agent-Generated UI
 
 A2UI 개념 기반의 **자연어 → UI JSON 생성 → 런타임 렌더링** 서비스.
 Slack bot과 웹 Visual Editor를 통해 자연어로 UI를 만들고, 실시간으로 편집할 수 있습니다.
@@ -187,6 +187,93 @@ Slack: /agui 대시보드 만들어줘
 **지원 컴포넌트:** card, text, button, text-field, select, checkbox, image, icon, divider, container, grid, stack
 
 **토큰 참조:** `$colors.primary`, `$spacing.md` 형태로 designTokens 값을 참조
+
+## 워크플로우 시스템
+
+인터랙티브 위젯(button, text-field, select, checkbox)에 워크플로우를 설정하여 사용자 액션을 정의합니다.
+코드 추출 시 워크플로우 정보를 기반으로 실제 동작하는 React 코드를 생성합니다.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  위젯 선택 (button, text-field, select, checkbox)       │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Properties 패널 (우측)                          │    │
+│  │                                                 │    │
+│  │  Props    ─ label, placeholder 등                │    │
+│  │  Style    ─ 색상, 크기, 레이아웃                  │    │
+│  │  Workflow ─ 트리거 + 액션 체인                    │    │
+│  └─────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘
+
+워크플로우 구조:
+┌──────────────────────────────────────────────┐
+│  Workflow                                    │
+│  ├─ trigger: onClick | onChange | onSubmit    │
+│  │           onBlur  | onFocus               │
+│  └─ actions: [                               │
+│       ├─ API 호출    (method, url, body)      │
+│       ├─ 페이지 이동  (path)                  │
+│       ├─ 상태 변경    (target, value)         │
+│       ├─ 폼 제출     (formId)                │
+│       └─ 커스텀      (description)           │
+│     ]                                        │
+│     액션 간 체이닝: onSuccess / onError       │
+└──────────────────────────────────────────────┘
+```
+
+### 워크플로우 JSON 예시
+
+```json
+{
+  "id": "submit-btn",
+  "type": "button",
+  "props": { "label": "로그인" },
+  "workflows": [
+    {
+      "trigger": "onClick",
+      "actions": [
+        {
+          "id": "action-1",
+          "type": "api",
+          "label": "로그인 API",
+          "method": "POST",
+          "url": "/api/auth/login",
+          "body": "{ \"email\": \"$email\", \"password\": \"$password\" }",
+          "onSuccess": "action-2",
+          "onError": "action-3"
+        },
+        {
+          "id": "action-2",
+          "type": "navigate",
+          "label": "대시보드 이동",
+          "path": "/dashboard"
+        },
+        {
+          "id": "action-3",
+          "type": "setState",
+          "label": "에러 표시",
+          "target": "error-msg.visible",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### 코드 추출 흐름
+
+```
+하단 패널 탭:
+┌──────┬─────────┬──────┬──────┐
+│ Chat │ LLM Log │ JSON │ Code │
+└──────┴─────────┴──────┴──────┘
+
+JSON 탭  → A2UI JSON 원본 복사/확인
+Code 탭  → React + TailwindCSS 코드 변환
+           워크플로우 → 이벤트 핸들러 코드 생성
+```
 
 ## 기술 스택
 

@@ -13,9 +13,10 @@ beforeEach(() => {
 });
 
 describe("AssetsLayout", () => {
-  it("renders all 5 tabs", () => {
+  it("renders all 6 tabs", () => {
     render(<AssetsLayout />);
 
+    expect(screen.getByRole("tab", { name: /widgets/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /tokens/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /icons/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /images/i })).toBeInTheDocument();
@@ -23,8 +24,17 @@ describe("AssetsLayout", () => {
     expect(screen.getByRole("tab", { name: /sync/i })).toBeInTheDocument();
   });
 
-  it("shows token editor on tokens tab by default", () => {
+  it("shows widget catalog on widgets tab by default", () => {
     render(<AssetsLayout />);
+
+    expect(screen.getByTestId("widget-catalog")).toBeInTheDocument();
+  });
+
+  it("switches to tokens tab when clicked", async () => {
+    const user = userEvent.setup();
+    render(<AssetsLayout />);
+
+    await user.click(screen.getByRole("tab", { name: /tokens/i }));
 
     expect(screen.getByTestId("design-token-editor")).toBeInTheDocument();
   });
@@ -69,28 +79,38 @@ describe("AssetsLayout", () => {
     const user = userEvent.setup();
     render(<AssetsLayout />);
 
+    const widgetsTab = screen.getByRole("tab", { name: /widgets/i });
     const tokensTab = screen.getByRole("tab", { name: /tokens/i });
-    const iconsTab = screen.getByRole("tab", { name: /icons/i });
 
-    expect(tokensTab).toHaveAttribute("aria-selected", "true");
-    expect(iconsTab).toHaveAttribute("aria-selected", "false");
-
-    await user.click(iconsTab);
-
+    expect(widgetsTab).toHaveAttribute("aria-selected", "true");
     expect(tokensTab).toHaveAttribute("aria-selected", "false");
-    expect(iconsTab).toHaveAttribute("aria-selected", "true");
+
+    await user.click(tokensTab);
+
+    expect(widgetsTab).toHaveAttribute("aria-selected", "false");
+    expect(tokensTab).toHaveAttribute("aria-selected", "true");
   });
 });
 
 describe("DesignTokenEditor", () => {
-  it("shows empty state when no tokens", () => {
+  it("shows default token sets", async () => {
+    const user = userEvent.setup();
     render(<AssetsLayout />);
 
-    expect(screen.getByText("토큰 세트가 없습니다")).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: /tokens/i }));
+
+    expect(screen.getByText("Colors")).toBeInTheDocument();
+    expect(screen.getByText("Spacing")).toBeInTheDocument();
+    expect(screen.getByText("Typography")).toBeInTheDocument();
+    expect(screen.getByText("Border Radius")).toBeInTheDocument();
+    expect(screen.getByText("Shadows")).toBeInTheDocument();
   });
 
-  it("shows new token set button", () => {
+  it("shows new token set button", async () => {
+    const user = userEvent.setup();
     render(<AssetsLayout />);
+
+    await user.click(screen.getByRole("tab", { name: /tokens/i }));
 
     expect(
       screen.getByRole("button", { name: /새 토큰 세트/i }),

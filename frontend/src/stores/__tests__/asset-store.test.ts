@@ -6,16 +6,21 @@ describe("AssetStore", () => {
     useAssetStore.getState().reset();
   });
 
-  it("has empty arrays in initial state", () => {
+  it("has default token sets and empty arrays for other assets", () => {
     const state = useAssetStore.getState();
-    expect(state.designTokenSets).toEqual([]);
+    expect(state.designTokenSets.length).toBe(5);
+    expect(state.designTokenSets[0].name).toBe("Colors");
+    expect(state.designTokenSets[1].name).toBe("Spacing");
+    expect(state.designTokenSets[2].name).toBe("Typography");
+    expect(state.designTokenSets[3].name).toBe("Border Radius");
+    expect(state.designTokenSets[4].name).toBe("Shadows");
     expect(state.templates).toEqual([]);
     expect(state.icons).toEqual([]);
     expect(state.images).toEqual([]);
   });
 
-  it("has tokens as default active tab", () => {
-    expect(useAssetStore.getState().activeTab).toBe("tokens");
+  it("has widgets as default active tab", () => {
+    expect(useAssetStore.getState().activeTab).toBe("widgets");
   });
 
   it("setActiveTab changes tab", () => {
@@ -38,11 +43,11 @@ describe("AssetStore", () => {
     useAssetStore.getState().reset();
 
     const state = useAssetStore.getState();
-    expect(state.designTokenSets).toEqual([]);
+    expect(state.designTokenSets.length).toBe(5);
     expect(state.templates).toEqual([]);
     expect(state.icons).toEqual([]);
     expect(state.images).toEqual([]);
-    expect(state.activeTab).toBe("tokens");
+    expect(state.activeTab).toBe("widgets");
   });
 
   it("loadTokens fetches and stores design token sets", async () => {
@@ -61,7 +66,12 @@ describe("AssetStore", () => {
 
   it("loadTemplates fetches and stores templates", async () => {
     const mockTemplates = [
-      { id: "tpl1", name: "Card", category: "layout", template: { type: "card" } },
+      {
+        id: "tpl1",
+        name: "Card",
+        category: "layout",
+        template: { type: "card" },
+      },
     ];
     globalThis.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,

@@ -1,4 +1,5 @@
 export { AssetsLayout } from "./AssetsLayout";
+export { WidgetCatalog } from "./WidgetCatalog";
 export { DesignTokenEditor } from "./DesignTokenEditor";
 export { IconGallery } from "./IconGallery";
 export { ImageGallery } from "./ImageGallery";

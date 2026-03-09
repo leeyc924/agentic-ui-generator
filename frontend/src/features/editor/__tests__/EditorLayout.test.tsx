@@ -1,7 +1,12 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { EditorLayout } from "../index";
+
+function renderWithRouter(ui: React.ReactElement) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>);
+}
 
 afterEach(() => {
   cleanup();
@@ -9,7 +14,7 @@ afterEach(() => {
 
 describe("EditorLayout", () => {
   it("renders all 5 sections", () => {
-    render(<EditorLayout />);
+    renderWithRouter(<EditorLayout />);
 
     expect(screen.getByTestId("top-bar")).toBeInTheDocument();
     expect(screen.getByTestId("left-panel")).toBeInTheDocument();
@@ -20,17 +25,17 @@ describe("EditorLayout", () => {
 });
 
 describe("TopBar", () => {
-  it("renders AGUI title and undo/redo buttons", () => {
-    render(<EditorLayout />);
+  it("renders A2UI title and undo/redo buttons", () => {
+    renderWithRouter(<EditorLayout />);
 
     const topBar = screen.getByTestId("top-bar");
-    expect(topBar).toHaveTextContent("AGUI");
+    expect(topBar).toHaveTextContent("A2UI");
     expect(screen.getByRole("button", { name: /undo/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /redo/i })).toBeInTheDocument();
   });
 
   it("renders save button", () => {
-    render(<EditorLayout />);
+    renderWithRouter(<EditorLayout />);
 
     const saveButton = screen.getByRole("button", { name: /save/i });
     expect(saveButton).toBeInTheDocument();
@@ -40,30 +45,30 @@ describe("TopBar", () => {
 
 describe("LeftPanel", () => {
   it("shows Widget Tree header", () => {
-    render(<EditorLayout />);
+    renderWithRouter(<EditorLayout />);
 
     const leftPanel = screen.getByTestId("left-panel");
     expect(leftPanel).toHaveTextContent("Widget Tree");
   });
 
-  it("shows placeholder text", () => {
-    render(<EditorLayout />);
+  it("shows empty state when no document loaded", () => {
+    renderWithRouter(<EditorLayout />);
 
     const leftPanel = screen.getByTestId("left-panel");
-    expect(leftPanel).toHaveTextContent("위젯 트리가 여기에 표시됩니다");
+    expect(leftPanel).toHaveTextContent("위젯이 없습니다");
   });
 });
 
 describe("RightPanel", () => {
   it("shows Properties header", () => {
-    render(<EditorLayout />);
+    renderWithRouter(<EditorLayout />);
 
     const rightPanel = screen.getByTestId("right-panel");
     expect(rightPanel).toHaveTextContent("Properties");
   });
 
   it("shows placeholder text", () => {
-    render(<EditorLayout />);
+    renderWithRouter(<EditorLayout />);
 
     const rightPanel = screen.getByTestId("right-panel");
     expect(rightPanel).toHaveTextContent("위젯을 선택하세요");
@@ -72,7 +77,7 @@ describe("RightPanel", () => {
 
 describe("Canvas", () => {
   it("shows empty state when no document loaded", () => {
-    render(<EditorLayout />);
+    renderWithRouter(<EditorLayout />);
 
     const canvas = screen.getByTestId("canvas");
     expect(canvas).toHaveTextContent(
@@ -82,39 +87,34 @@ describe("Canvas", () => {
 });
 
 describe("BottomPanel", () => {
-  it("has Chat and LLM Log tabs", () => {
-    render(<EditorLayout />);
+  it("has Chat and Log tabs", () => {
+    renderWithRouter(<EditorLayout />);
 
     expect(screen.getByRole("tab", { name: /chat/i })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /llm log/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /^log$/i })).toBeInTheDocument();
   });
 
   it("switches tabs when clicked", async () => {
     const user = userEvent.setup();
-    render(<EditorLayout />);
+    renderWithRouter(<EditorLayout />);
 
     const chatTab = screen.getByRole("tab", { name: /chat/i });
-    const llmLogTab = screen.getByRole("tab", { name: /llm log/i });
+    const logTab = screen.getByRole("tab", { name: /^log$/i });
 
-    // Chat tab is active by default
     expect(chatTab).toHaveAttribute("aria-selected", "true");
-    expect(llmLogTab).toHaveAttribute("aria-selected", "false");
+    expect(logTab).toHaveAttribute("aria-selected", "false");
 
-    // Click LLM Log tab
-    await user.click(llmLogTab);
+    await user.click(logTab);
 
     expect(chatTab).toHaveAttribute("aria-selected", "false");
-    expect(llmLogTab).toHaveAttribute("aria-selected", "true");
-
-    // Verify LLM Log content is shown
-    const bottomPanel = screen.getByTestId("bottom-panel");
-    expect(bottomPanel).toHaveTextContent("LLM 로그가 여기에 표시됩니다");
+    expect(logTab).toHaveAttribute("aria-selected", "true");
   });
 
-  it("shows chat content by default", () => {
-    render(<EditorLayout />);
+  it("shows chat panel by default", () => {
+    renderWithRouter(<EditorLayout />);
 
     const bottomPanel = screen.getByTestId("bottom-panel");
-    expect(bottomPanel).toHaveTextContent("채팅 메시지가 여기에 표시됩니다");
+    expect(bottomPanel).toContainElement(screen.getByTestId("message-list"));
+    expect(bottomPanel).toContainElement(screen.getByTestId("chat-input"));
   });
 });

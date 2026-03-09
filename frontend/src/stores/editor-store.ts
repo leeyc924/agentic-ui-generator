@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { produce } from "immer";
-import type { A2UIDocument, A2UIComponent } from "../lib/types";
+import type { A2UIDocument, A2UIComponent, Workflow } from "../lib/types";
 
 interface WidgetPatch {
   readonly props?: Record<string, unknown>;
   readonly style?: Record<string, string>;
   readonly children?: string[];
+  readonly workflows?: Workflow[];
 }
 
 interface NewWidget {
@@ -79,6 +80,7 @@ export const useEditorStore = create<EditorState>()((set, get) => ({
         props?: Record<string, unknown>;
         style?: Record<string, string>;
         children?: string[];
+        workflows?: Workflow[];
       };
       if (patch.props) {
         mutable.props = { ...mutable.props, ...patch.props };
@@ -88,6 +90,9 @@ export const useEditorStore = create<EditorState>()((set, get) => ({
       }
       if (patch.children) {
         mutable.children = [...patch.children];
+      }
+      if (patch.workflows) {
+        mutable.workflows = [...patch.workflows];
       }
     });
 

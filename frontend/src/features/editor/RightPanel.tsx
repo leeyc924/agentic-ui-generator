@@ -1,6 +1,8 @@
 import { useEditorStore } from "../../stores/editor-store";
+import { INTERACTIVE_TYPES } from "../../lib/types";
 import { PropsPanel } from "./panels/PropsPanel";
 import { StylePanel } from "./panels/StylePanel";
+import { WorkflowPanel } from "./panels/WorkflowPanel";
 
 export function RightPanel() {
   const document = useEditorStore((s) => s.document);
@@ -9,6 +11,10 @@ export function RightPanel() {
   const selectedWidget = document?.components.find(
     (c) => c.id === selectedWidgetId,
   );
+
+  const isInteractive =
+    selectedWidget != null &&
+    INTERACTIVE_TYPES.includes(selectedWidget.type);
 
   return (
     <div
@@ -40,7 +46,7 @@ export function RightPanel() {
             </div>
             <PropsPanel widget={selectedWidget} />
           </div>
-          <div>
+          <div className="border-b border-border">
             <div className="px-3 py-1.5">
               <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wide">
                 Style
@@ -48,6 +54,16 @@ export function RightPanel() {
             </div>
             <StylePanel widget={selectedWidget} />
           </div>
+          {isInteractive && (
+            <div>
+              <div className="px-3 py-1.5">
+                <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wide">
+                  Workflow
+                </h3>
+              </div>
+              <WorkflowPanel widget={selectedWidget} />
+            </div>
+          )}
         </div>
       )}
     </div>

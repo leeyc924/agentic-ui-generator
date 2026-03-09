@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://agui.dev/schemas/a2ui-extended.json",
-  "title": "AGUI A2UI Extended Schema",
+  "title": "A2UI Extended Schema",
   "type": "object",
   "required": ["version", "components"],
   "properties": {

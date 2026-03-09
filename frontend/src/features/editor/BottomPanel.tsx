@@ -1,13 +1,23 @@
 import { useState } from "react";
 import { ResizeHandle } from "./ResizeHandle";
+import { ChatPanel } from "../chat";
 import { LogPanel } from "../chat/LogPanel";
+import { JsonPanel } from "./panels/JsonPanel";
+import { CodePanel } from "./panels/CodePanel";
 
-type Tab = "chat" | "llm-log";
+type Tab = "chat" | "llm-log" | "json" | "code";
 
 interface BottomPanelProps {
   readonly height: number;
   readonly onResize: (delta: number) => void;
 }
+
+const TABS: readonly { readonly id: Tab; readonly label: string }[] = [
+  { id: "chat", label: "Chat" },
+  { id: "llm-log", label: "Log" },
+  { id: "json", label: "JSON" },
+  { id: "code", label: "Code" },
+];
 
 export function BottomPanel({ height, onResize }: BottomPanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>("chat");
@@ -27,41 +37,27 @@ export function BottomPanel({ height, onResize }: BottomPanelProps) {
           role="tablist"
           aria-label="Bottom panel tabs"
         >
-          <button
-            role="tab"
-            aria-selected={activeTab === "chat"}
-            onClick={() => setActiveTab("chat")}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
-              activeTab === "chat"
-                ? "text-accent border-b-2 border-accent"
-                : "text-text-muted hover:text-text-primary"
-            }`}
-          >
-            Chat
-          </button>
-          <button
-            role="tab"
-            aria-selected={activeTab === "llm-log"}
-            onClick={() => setActiveTab("llm-log")}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
-              activeTab === "llm-log"
-                ? "text-accent border-b-2 border-accent"
-                : "text-text-muted hover:text-text-primary"
-            }`}
-          >
-            LLM Log
-          </button>
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? "text-accent border-b-2 border-accent"
+                  : "text-text-muted hover:text-text-primary"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
         <div className="flex-1 overflow-hidden">
-          {activeTab === "chat" ? (
-            <div className="p-3 overflow-auto h-full">
-              <p className="text-sm text-text-muted">
-                채팅 메시지가 여기에 표시됩니다
-              </p>
-            </div>
-          ) : (
-            <LogPanel />
-          )}
+          {activeTab === "chat" && <ChatPanel />}
+          {activeTab === "llm-log" && <LogPanel />}
+          {activeTab === "json" && <JsonPanel />}
+          {activeTab === "code" && <CodePanel />}
         </div>
       </div>
     </div>

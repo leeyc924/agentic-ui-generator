@@ -1,13 +1,21 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HomePage } from "./pages/HomePage";
+import { EditorPage } from "./pages/EditorPage";
+import { PreviewPage } from "./pages/PreviewPage";
+import { ProjectListPage } from "./pages/ProjectListPage";
+import { AssetsPage } from "./pages/AssetsPage";
+
 function App() {
   return (
-    <div className="min-h-screen bg-bg text-text-primary font-sans">
-      <header className="h-12 bg-surface border-b border-border flex items-center px-4">
-        <h1 className="text-lg font-semibold">AGUI</h1>
-      </header>
-      <main className="p-4">
-        <p className="text-text-muted">Visual Editor will be here.</p>
-      </main>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/editor" element={<EditorPage />} />
+        <Route path="/preview/:id" element={<PreviewPage />} />
+        <Route path="/projects" element={<ProjectListPage />} />
+        <Route path="/assets" element={<AssetsPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
