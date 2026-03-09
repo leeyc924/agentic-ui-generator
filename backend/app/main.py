@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.assets import router as assets_router
 from app.api.projects import router as projects_router
+from app.api.templates import router as templates_router
+from app.api.tokens import router as tokens_router
 from app.config import settings
 from app.database import Base, engine
 
@@ -18,7 +21,10 @@ app.add_middleware(
 )
 
 
+app.include_router(assets_router)
 app.include_router(projects_router)
+app.include_router(templates_router)
+app.include_router(tokens_router)
 
 
 @app.get("/api/health")
