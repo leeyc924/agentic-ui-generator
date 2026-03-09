@@ -1,0 +1,29 @@
+{
+  "name": "agui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A2UI 기반 자연어 → UI JSON 생성 + Visual Editor",
+  "scripts": {
+    "dev": "concurrently -n fe,be -c blue,green \"npm run dev:fe\" \"npm run dev:be\"",
+    "dev:fe": "cd frontend && npm run dev",
+    "dev:be": "cd backend && .venv/bin/uvicorn app.main:app --reload --port 8000",
+    "dev:slack": "cd slack-bot && .venv/bin/python -m bot.main",
+
+    "build": "cd frontend && npm run build",
+
+    "test": "concurrently -n fe,be,slack \"npm run test:fe\" \"npm run test:be\" \"npm run test:slack\"",
+    "test:fe": "cd frontend && npx vitest run",
+    "test:be": "cd backend && .venv/bin/python -m pytest tests/ -v --cov=app --cov-report=term-missing",
+    "test:slack": "cd slack-bot && .venv/bin/python -m pytest tests/ -v --cov=bot --cov-report=term-missing",
+    "test:e2e": "cd frontend && npx playwright test --reporter=list",
+
+    "setup": "npm run setup:fe && npm run setup:be && npm run setup:slack",
+    "setup:fe": "cd frontend && npm install",
+    "setup:be": "cd backend && python3.13 -m venv .venv && .venv/bin/pip install -e '.[dev]'",
+    "setup:slack": "cd slack-bot && python3.13 -m venv .venv && .venv/bin/pip install -e '.[dev]'",
+    "setup:playwright": "cd frontend && npx playwright install chromium"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
