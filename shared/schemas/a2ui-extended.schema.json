@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agui.dev/schemas/a2ui-extended.json",
+  "title": "AGUI A2UI Extended Schema",
+  "type": "object",
+  "required": ["version", "components"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "designTokens": {
+      "type": "object",
+      "properties": {
+        "colors": { "type": "object", "additionalProperties": { "type": "string" } },
+        "spacing": { "type": "object", "additionalProperties": { "type": "string" } },
+        "typography": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "fontFamily": { "type": "string" },
+              "fontSize": { "type": "string" },
+              "fontWeight": { "type": ["string", "number"] },
+              "lineHeight": { "type": "string" }
+            }
+          }
+        },
+        "borderRadius": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Component" }
+    }
+  },
+  "definitions": {
+    "Component": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["card", "text", "button", "text-field", "select", "checkbox", "image", "icon", "divider", "container", "grid", "stack"]
+        },
+        "children": { "type": "array", "items": { "type": "string" } },
+        "props": { "type": "object" },
+        "style": { "type": "object" }
+      }
+    }
+  }
+}
