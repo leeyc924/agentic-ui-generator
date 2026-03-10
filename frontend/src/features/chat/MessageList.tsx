@@ -21,8 +21,8 @@ export function MessageList() {
           data-testid={`message-${msg.id}`}
           className={`max-w-[80%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${
             msg.role === "user"
-              ? "ml-auto bg-accent/20 text-text-primary"
-              : "mr-auto bg-surface-elevated text-text-primary"
+              ? "mr-auto bg-surface-elevated text-text-primary"
+              : "ml-auto bg-accent/20 text-text-primary"
           }`}
         >
           {msg.content}
